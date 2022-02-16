@@ -51,7 +51,16 @@ public class MCKP {
 	      }
 	    }
 	    
-	      
+	/*    int temp [] [] = new int [m][n];
+	    temp=weightsOfItems;
+	    
+	    for(i=0;i<m;i++){
+	        for(int j=0; j<3*m;j++){
+	            indexes[k]=indexOfMaxElement1(temp[i]);
+	            temp[i][indexes[k]]=-1;
+	            k++;
+	      }
+	    }   */
 	    
 	    
 	    
@@ -59,19 +68,15 @@ public class MCKP {
 	    	values[indexes[i]]=0;
 	    }  
 	    
-	
-	  
-	  float sum [] = new float[n];
-      //double sum2[] = new double[n]; 
-      //float f = 1;
-	  for(i=0;i<n;i++) {
+	   float sum [] = new float[n];
+       //float f = 1;
+       for(i=0;i<n;i++) {
     	   for(int j=0;j<m;j++) {
-    		  if(values[i] != 0) {
-    			  sum[i]+=(float)values[i]/weightsOfItems[j][i];
-    			  //f *=(float)values[i]/weightsOfItems[j][i];
-    			  //sum[i]+=f;
-    		  }
-    		}
+    		   //f(values[i] != 0) {
+    		   //f *= (float)values[i]/weightsOfItems[j][i];
+    		   sum[i]+=(float)values[i]/weightsOfItems[j][i];
+    		   
+    	   }
        }             
         
        for(i=0;i<n;i++) {
@@ -79,41 +84,41 @@ public class MCKP {
        }
        
        
+       float meanVal = 0;
+  	  meanVal = getMeanValue(weightsOfItems,n,m);
+  	  float stdDev = 0;
+  	  stdDev = getStdDev( weightsOfItems, n,  m, meanVal);
+  	  
+  	 boolean check = true;
+  	 float rate =0; 
+  	 for(i=0;i<n;i++) {
+     	   for(int j=0;j<m;j++) {
+     		   rate =(float)values[i]/weightsOfItems[j][i];
+     		   check = checkConfidence(weightsOfItems[j][i],meanVal,stdDev,rate);
+     		   if(check==false) {
+              	   sum[i] = 0;
+                 }
+     	   }
+             
+  	  }
+        
+  	  
+  		  System.out.println("mean value " + " " +meanVal);
+  	  
        
-       //????????????????????????????????????????????
- 	  float meanVals[] = new float[n];
- 	  meanVals = getMeanValue(weightsOfItems,n,m);
- 	  float stdDevs[] = new float[n];
- 	  stdDevs = getStdDev( weightsOfItems, n,  m, meanVals);
+  	 
+ 		  System.out.println("std dev "+ " " +stdDev);
  	  
- 	 boolean check = true;
- 	 float rate =0; 
- 	 for(i=0;i<n;i++) {
-    	   for(int j=0;j<m;j++) {
-    		   rate =(float)values[i]/weightsOfItems[j][i];
-    		   check = checkConfidence(weightsOfItems[j][i],meanVals[i],stdDevs[i],rate);
-    		   if(check==false) {
-             	   sum[i] = 0;
-                }
-    	   }
-            
- 	  }
+  	  
+  	  
+      for(i=0;i<n;i++) {
+   	   System.out.println("new "+sum[i]);
+      } 
        
- 	  for(int z =0 ;z<n ; z++) {
- 		  System.out.println("mean values "+ z +" " +meanVals[z]);
- 	  }
-      
- 	 for(int z =0 ;z<n ; z++) {
-		  System.out.println("std devs "+ z +" " +stdDevs[z]);
-	  }
- 	  
- 	  
-     for(i=0;i<n;i++) {
-  	   System.out.println("new "+sum[i]);
-     } 
-    
        
-
+       
+       
+       
        
        
        int index;
@@ -197,58 +202,65 @@ public class MCKP {
 	}
 
 
-	public static float[] getMeanValue(int weightsOfItems[][],int n, int m) {
+
+
+    public static float getMeanValue(int weightsOfItems[][],int n, int m) {
 		float meanVal = 0;
-		float[] meanValues = new float[n];
+		//float[] meanValues = new float[n];
 		for(int i=0;i<n;i++) {
 	    	   for(int j=0;j<m;j++) {
 	    		  meanVal+=(float)weightsOfItems[j][i];
 	    	   }
-	       meanVal =(float)meanVal/m;
-	       meanValues[i] = meanVal;
+	         
 		}
-		
-		return meanValues;
+		meanVal =(float)meanVal/(m*n);
+		return meanVal;
 	
 	
 	}
 
 	
-	public static float[] getStdDev(int weightsOfItems[][],int n, int m,float meanVals[]) {
+	public static float getStdDev(int weightsOfItems[][],int n, int m,float meanVal) {
 		float stdDevVal = 0;
-		float[] stdDevs = new float[n];
+		//float[] stdDevs = new float[n];
 		for(int i=0;i<n;i++) {
 	    	   for(int j=0;j<m;j++) {
-	    		  stdDevVal+=(weightsOfItems[j][i]-meanVals[i])*(weightsOfItems[j][i]-meanVals[i]);
+	    		  stdDevVal+=(weightsOfItems[j][i]-meanVal)*(weightsOfItems[j][i]-meanVal);
 	    		  }
-	    	   stdDevVal=(float)stdDevVal/(m-1);
-	    	   stdDevVal=(float)Math.pow((double)stdDevVal,0.5);
-	    	   stdDevs[i] = stdDevVal;
+	    	     	   
 		}
-		
-			return stdDevs;
+		 	stdDevVal=(float)stdDevVal/((m*n)-1);
+  	   		stdDevVal=(float)Math.pow((double)stdDevVal,0.5);
+			return stdDevVal;
 	}
 	
 	static boolean checkConfidence(int weight,float meanVal,float stdDev,float rate) {
 		
 		boolean result = true;
-		double x = 4;
-		double y = 2;
+		double x = 12;
+		double y = 12;
 		float upperLvl = meanVal + (float)x*stdDev;
 	    float lowerLvl = meanVal - (float)y*stdDev;
-	    if((weight>upperLvl || weight<lowerLvl || (rate < 0.20 && rate > 0.14)  ) && weight!=0 ) {
+	    if((weight>upperLvl || weight<lowerLvl || rate < 0.15  ) && weight!=0 ) {
 	    	result = false;
 	    }
 	    return result;
 	}
 	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
-
-
-
-
